@@ -91,6 +91,7 @@ class MLP():
                 #########################################################
                 #2. EVALUATE DATA WITH R2 SCORE FUNCTION
                 pred = self.YPred.eval(feed_dict={self.X:X_test})
+                logger.write('Y predict: {}' + str(pred))
                 Y_pred = [x[0] for x in pred]
                 Y_test = [x[0] for x in Y_test]
                 g = 0
