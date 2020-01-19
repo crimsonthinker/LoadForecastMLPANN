@@ -1,9 +1,9 @@
 from data_preprocessor import CSVDataPreProcessor
 from MLPLayer import MLP
 import sys
-input_size = 5 #Lấy 100 số làm input, mỗi kết quả cách nhau 1 quãng thời gian bằng nhau
+input_size = 3 #Lấy 100 số làm input, mỗi kết quả cách nhau 1 quãng thời gian bằng nhau
+n_hidden = 2
 output_size = 1 #Dự đoán 5 số vol, mỗi số vol cách nhau 1 quãng thời gian bằng nhau
-n_hidden = 3
 batch_size = 10
 learning_rate = 0.05
 training_epoch = 100 #fix
