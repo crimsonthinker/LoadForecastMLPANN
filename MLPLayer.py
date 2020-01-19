@@ -4,12 +4,13 @@ import copy, datetime, statistics
 
 class MLP():
 
-    def __init__(self,n_inputs,n_hidden,n_outputs,learning_rate=0.001,batch_size=50,training_epoch=50):
+    def __init__(self,n_inputs,n_hidden_1,n_hidden_2,n_outputs,learning_rate=0.001,batch_size=50,training_epoch=50,keep_prob=0.8):
         """
         Khởi tạo hyperparameter và MLP cùng với các thông số khác như hàm mất mát, phương pháp thay đổi trọng số
         """
         self.n_inputs = n_inputs #Layer input
-        self.n_hidden = n_hidden # Layer ẩn 1
+        self.n_hidden_1 = n_hidden_1 # Layer ẩn 1
+        self.n_hidden_2 = n_hidden_2
         self.n_outputs = n_outputs #Layer output
         self.learning_rate = learning_rate #Tốc độ học
         self.batch_size = batch_size #Số lượng dòng data cho mỗi lần học
@@ -20,15 +21,18 @@ class MLP():
 
         #weight and bias cho các node trong MLP
         self.weights = {
-            'h1': tf.Variable(tf.random_normal([n_inputs, n_hidden])),
-            'out': tf.Variable(tf.random_normal([n_hidden, n_outputs]))
+            'h1': tf.Variable(tf.random_normal([n_inputs, n_hidden_1])),
+            'h2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2])),
+            'out': tf.Variable(tf.random_normal([n_hidden_2, n_outputs]))
         }
         self.biases = {
-            'b1': tf.Variable(tf.random_normal([n_hidden])),
+            'b1': tf.Variable(tf.random_normal([n_hidden_1])),
+            'b2': tf.Variable(tf.random_normal([n_hidden_2])),
             'out': tf.Variable(tf.random_normal([n_outputs]))
         }
 
         #Layer output chứa kết quả dự đoán từ MLP
+        
         l1_regularizer = tf.contrib.layers.l1_regularizer(scale=0.005, scope=None)
         weights = tf.trainable_variables()
         regularization_penalty = tf.contrib.layers.apply_regularization(l1_regularizer, weights)
@@ -44,12 +48,11 @@ class MLP():
         layer_1 = tf.add(tf.matmul(X, self.weights['h1']), self.biases['b1'])
         # Hidden fully connected layer with 256 neurons
         layer_1 = tf.add(tf.nn.relu(layer_1),tf.sin(layer_1)) #sin function is similar to any kind of wave functions
-        #layer_2 = tf.add(tf.matmul(layer_1, self.weights['h2']), self.biases['b2'])
-        #layer_2 = tf.sin(layer_2) #sin function is similar to any kind of wave functions -> is it possible to use cos function?
-        #layer_3 = tf.add(tf.matmul(layer_2, self.weights['h3']), self.biases['b3'])
-        #layer_3 = tf.sin(layer_3)
+        layer_2 = tf.add(tf.matmul(layer_1, self.weights['h2']), self.biases['b2'])
+        layer_2 = tf.sin(layer_2) #sin function is similar to any kind of wave functions -> is it possible to use cost function?
+        layer_2 = tf.nn.dropout(layer_2, keep_prob)
         # Output fully connected layer with a neuron for each class
-        out_layer = tf.matmul(layer_1, self.weights['out']) + self.biases['out']
+        out_layer = tf.matmul(layer_2, self.weights['out']) + self.biases['out']
         out_layer = tf.nn.relu(out_layer) #gettting positive value; omit any other values
         return out_layer
 
